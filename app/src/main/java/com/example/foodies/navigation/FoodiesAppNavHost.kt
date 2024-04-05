@@ -9,6 +9,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.foodies.model.fakeProduct
+import com.example.foodies.ui.CartScreen
+import com.example.foodies.ui.CartScreenDestination
 import com.example.foodies.ui.CatalogScreen
 import com.example.foodies.ui.CatalogScreenDestination
 import com.example.foodies.ui.CatalogScreenUiState
@@ -31,7 +33,7 @@ fun FoodiesAppNavHost() {
         ) {
             CatalogScreen(
                 catalogScreenUiState = catalogScreenUiState,
-                goToCartScreen = {},
+                goToCartScreen = { navController.navigate(CartScreenDestination.route) },
                 onCardClick = { product ->
                     navController.navigate(ProductCardDestination.route + "/${product.id}")
                 }
@@ -49,6 +51,11 @@ fun FoodiesAppNavHost() {
                 product = product!!,
                 navigateBack = { navController.navigateUp() }
             )
+        }
+        composable(route = CartScreenDestination.route) {
+            CartScreen(
+                catalogScreenUiState = catalogScreenUiState,
+                onBackClick = { navController.navigateUp() })
         }
     }
 }

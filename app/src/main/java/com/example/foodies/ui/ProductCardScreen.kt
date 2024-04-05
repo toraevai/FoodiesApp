@@ -1,6 +1,5 @@
 package com.example.foodies.ui
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,7 +23,6 @@ import com.example.foodies.ui.parts.ProductImageWithTag
 
 object ProductCardDestination : NavigationDestination {
     override val route = "product_card"
-    override val title = null
 }
 
 @Composable

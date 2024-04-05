@@ -57,7 +57,6 @@ import java.text.NumberFormat
 
 object CatalogScreenDestination : NavigationDestination {
     override val route = "catalog_screen"
-    override val title = null
 }
 
 @Composable
@@ -254,7 +253,7 @@ fun GridProductCard(
                 product = product,
                 listOfTags = listOfTags,
                 currentDestination = CatalogScreenDestination,
-                onBackClick = { /*TODO*/ },
+                onBackClick = { },
                 modifier = Modifier.height(170.dp)
             )
             Text(
@@ -264,7 +263,7 @@ fun GridProductCard(
                     start = dimensionResource(id = R.dimen.padding_medium),
                     end = dimensionResource(id = R.dimen.padding_medium)
                 ),
-                minLines = 1
+                minLines = 2
             )
             Text(
                 text = "${product.measure} ${product.measureUnit}",
