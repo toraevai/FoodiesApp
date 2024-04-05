@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -50,7 +51,7 @@ import com.example.foodies.model.fakeProduct
 import com.example.foodies.model.fakeTag
 import com.example.foodies.navigation.NavigationDestination
 import com.example.foodies.ui.parts.Counter
-import com.example.foodies.ui.parts.FoodiesAppBotAppBar
+import com.example.foodies.ui.parts.FoodiesBotAppBar
 import com.example.foodies.ui.parts.ProductImageWithTag
 import com.example.foodies.ui.theme.FoodiesTheme
 import java.text.NumberFormat
@@ -108,7 +109,7 @@ fun SuccessCatalogScreen(
         },
         bottomBar = {
             if (cart.filter { it.value != 0 }.isNotEmpty()) {
-                FoodiesAppBotAppBar(
+                FoodiesBotAppBar(
                     onButtonClick = goToCartScreen,
                     cart = cart,
                     currentDestination = CatalogScreenDestination,
@@ -195,7 +196,8 @@ fun ListOfProductCategories(
             ) {
                 Text(
                     text = productCategory.name,
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_large))
+                    style = MaterialTheme.typography.titleSmall,
+                    color = if (productCategory == currentCategory) Color.White else Color.Black
                 )
             }
         }
@@ -263,13 +265,13 @@ fun GridProductCard(
                     start = dimensionResource(id = R.dimen.padding_medium),
                     end = dimensionResource(id = R.dimen.padding_medium)
                 ),
-                minLines = 2
+                minLines = 3
             )
             Text(
                 text = "${product.measure} ${product.measureUnit}",
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(
-                    start = dimensionResource(id = R.dimen.padding_small)
+                    start = dimensionResource(id = R.dimen.padding_medium)
                 )
             )
             Box(contentAlignment = Alignment.Center) {
@@ -283,7 +285,8 @@ fun GridProductCard(
                                 bottom = dimensionResource(id = R.dimen.padding_medium),
                                 end = dimensionResource(id = R.dimen.padding_medium)
                             )
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        contentPadding = PaddingValues(0.dp)
                     ) {
                         Row {
                             Text(
@@ -365,7 +368,7 @@ fun CatalogScreenTopAppBarPreview() {
 @Composable
 fun CatalogScreenBottomAppBarPreview() {
     FoodiesTheme {
-        FoodiesAppBotAppBar(
+        FoodiesBotAppBar(
             onButtonClick = {},
             cart = mapOf(fakeProduct to 1),
             currentDestination = CatalogScreenDestination,

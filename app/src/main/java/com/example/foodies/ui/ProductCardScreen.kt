@@ -18,7 +18,7 @@ import com.example.foodies.R
 import com.example.foodies.model.Product
 import com.example.foodies.model.ProductTag
 import com.example.foodies.navigation.NavigationDestination
-import com.example.foodies.ui.parts.FoodiesAppBotAppBar
+import com.example.foodies.ui.parts.FoodiesBotAppBar
 import com.example.foodies.ui.parts.ProductImageWithTag
 
 object ProductCardDestination : NavigationDestination {
@@ -58,7 +58,7 @@ fun SuccessProductCardScreen(
 ) {
     Scaffold(
         bottomBar = {
-            FoodiesAppBotAppBar(
+            FoodiesBotAppBar(
                 onButtonClick = { addToCart(product) },
                 cart = cart,
                 currentDestination = ProductCardDestination,

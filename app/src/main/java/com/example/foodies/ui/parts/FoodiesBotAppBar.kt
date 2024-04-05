@@ -24,7 +24,7 @@ import com.example.foodies.ui.ProductCardDestination
 import java.text.NumberFormat
 
 @Composable
-fun FoodiesAppBotAppBar(
+fun FoodiesBotAppBar(
     onButtonClick: () -> Unit,
     cart: Map<Product, Int>,
     currentDestination: NavigationDestination,

@@ -34,7 +34,7 @@ import com.example.foodies.model.Product
 import com.example.foodies.model.fakeProduct
 import com.example.foodies.navigation.NavigationDestination
 import com.example.foodies.ui.parts.Counter
-import com.example.foodies.ui.parts.FoodiesAppBotAppBar
+import com.example.foodies.ui.parts.FoodiesBotAppBar
 import com.example.foodies.ui.theme.FoodiesTheme
 import com.example.foodies.ui.theme.Orange
 import java.text.NumberFormat
@@ -70,7 +70,7 @@ fun SuccessCartScreen(
             SuccessCartScreenTopAppBar(onBackClick = onBackClick)
         },
         bottomBar = {
-            FoodiesAppBotAppBar(
+            FoodiesBotAppBar(
                 onButtonClick = { /*TODO*/ },
                 cart = cart,
                 currentDestination = CartScreenDestination,
