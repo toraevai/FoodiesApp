@@ -1,6 +1,7 @@
-package com.example.foodies.ui.catalogScreen
+package com.example.foodies.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,18 +50,21 @@ import com.example.foodies.model.fakeProduct
 import com.example.foodies.model.fakeTag
 import com.example.foodies.navigation.NavigationDestination
 import com.example.foodies.ui.parts.Counter
+import com.example.foodies.ui.parts.FoodiesAppBotAppBar
+import com.example.foodies.ui.parts.ProductImageWithTag
 import com.example.foodies.ui.theme.FoodiesTheme
 import java.text.NumberFormat
 
 object CatalogScreenDestination : NavigationDestination {
     override val route = "catalog_screen"
     override val title = null
-
 }
 
 @Composable
 fun CatalogScreen(
     catalogScreenUiState: CatalogScreenUiState,
+    goToCartScreen: () -> Unit,
+    onCardClick: (Product) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (catalogScreenUiState) {
@@ -75,6 +79,8 @@ fun CatalogScreen(
                 listOfTags = catalogScreenUiState.listOfTags,
                 increaseCounter = { catalogScreenUiState.increaseCounter(it) },
                 decreaseCounter = { catalogScreenUiState.decreaseCounter(it) },
+                goToCartScreen = goToCartScreen,
+                onCardClick = onCardClick,
                 modifier = modifier
             )
         }
@@ -93,11 +99,25 @@ fun SuccessCatalogScreen(
     listOfTags: List<ProductTag>,
     increaseCounter: (Product) -> Unit,
     decreaseCounter: (Product) -> Unit,
+    goToCartScreen: () -> Unit,
+    onCardClick: (Product) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(topBar = {
-        CatalogScreenTopAppBar(onFilterClick = {}, onSearchClick = {})
-    }) { paddingValues ->
+    Scaffold(
+        topBar = {
+            CatalogScreenTopAppBar(onFilterClick = {}, onSearchClick = {})
+        },
+        bottomBar = {
+            if (cart.filter { it.value != 0 }.isNotEmpty()) {
+                FoodiesAppBotAppBar(
+                    onButtonClick = goToCartScreen,
+                    cart = cart,
+                    currentDestination = CatalogScreenDestination,
+                    currentProduct = fakeProduct
+                )
+            }
+        }
+    ) { paddingValues ->
         Column(modifier = modifier.padding(paddingValues)) {
             ListOfProductCategories(
                 currentCategory = currentCategory,
@@ -110,7 +130,8 @@ fun SuccessCatalogScreen(
                 listOfTags = listOfTags,
                 increaseCounter = increaseCounter,
                 decreaseCounter = decreaseCounter,
-                modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_big))
+                onCardClick = onCardClick,
+                modifier = Modifier.padding(all = dimensionResource(id = R.dimen.padding_large))
             )
         }
     }
@@ -157,8 +178,8 @@ fun ListOfProductCategories(
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(
-            start = dimensionResource(id = R.dimen.padding_big),
-            end = dimensionResource(id = R.dimen.padding_big)
+            start = dimensionResource(id = R.dimen.padding_large),
+            end = dimensionResource(id = R.dimen.padding_large)
         ),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
     ) {
@@ -175,7 +196,7 @@ fun ListOfProductCategories(
             ) {
                 Text(
                     text = productCategory.name,
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_big))
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_large))
                 )
             }
         }
@@ -189,6 +210,7 @@ fun GridOfProducts(
     listOfTags: List<ProductTag>,
     increaseCounter: (Product) -> Unit,
     decreaseCounter: (Product) -> Unit,
+    onCardClick: (Product) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -203,7 +225,8 @@ fun GridOfProducts(
                 productCount = cart[product]!!,
                 listOfTags = listOfTags,
                 increaseCounter = { increaseCounter(product) },
-                decreaseCounter = { decreaseCounter(product) }
+                decreaseCounter = { decreaseCounter(product) },
+                onCardClick = { onCardClick(product) }
             )
         }
     }
@@ -216,107 +239,83 @@ fun GridProductCard(
     listOfTags: List<ProductTag>,
     increaseCounter: () -> Unit,
     decreaseCounter: () -> Unit,
+    onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier.fillMaxWidth()) {
-        Box {
-            if (product.tagIds.isNotEmpty()) {
-                ProductTags(product = product, listOfTags = listOfTags)
-            }
-            Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.heightIn(min = 290.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.photo),
-                    contentDescription = stringResource(R.string.photo, product.name),
-                    modifier = Modifier.height(170.dp),
-                    contentScale = ContentScale.Crop
+    Card(modifier = modifier
+        .fillMaxWidth()
+        .clickable { onCardClick() }
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.heightIn(min = 290.dp)
+        ) {
+            ProductImageWithTag(
+                product = product,
+                listOfTags = listOfTags,
+                currentDestination = CatalogScreenDestination,
+                onBackClick = { /*TODO*/ },
+                modifier = Modifier.height(170.dp)
+            )
+            Text(
+                text = product.name,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = R.dimen.padding_medium),
+                    end = dimensionResource(id = R.dimen.padding_medium)
+                ),
+                minLines = 1
+            )
+            Text(
+                text = "${product.measure} ${product.measureUnit}",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = R.dimen.padding_small)
                 )
-                Text(
-                    text = product.name,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.padding_medium),
-                        end = dimensionResource(id = R.dimen.padding_medium)
-                    ),
-                    minLines = 1
-                )
-                Text(
-                    text = "${product.measure} ${product.measureUnit}",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(
-                        start = dimensionResource(id = R.dimen.padding_small)
-                    )
-                )
-                Box(contentAlignment = Alignment.Center,) {
-                    if (productCount == 0) {
-                        Button(
-                            onClick = increaseCounter,
-                            shape = MaterialTheme.shapes.medium,
-                            modifier = Modifier
-                                .padding(
-                                    start = dimensionResource(id = R.dimen.padding_medium),
-                                    bottom = dimensionResource(id = R.dimen.padding_medium),
-                                    end = dimensionResource(id = R.dimen.padding_medium)
-                                )
-                                .fillMaxWidth()
-                        ) {
-                            Row {
+            )
+            Box(contentAlignment = Alignment.Center) {
+                if (productCount == 0) {
+                    Button(
+                        onClick = increaseCounter,
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier
+                            .padding(
+                                start = dimensionResource(id = R.dimen.padding_medium),
+                                bottom = dimensionResource(id = R.dimen.padding_medium),
+                                end = dimensionResource(id = R.dimen.padding_medium)
+                            )
+                            .fillMaxWidth()
+                    ) {
+                        Row {
+                            Text(
+                                text = "${product.priceCurrent / 100} ${NumberFormat.getCurrencyInstance().currency!!.symbol}",
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            if (product.priceOld != null) {
+                                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
                                 Text(
-                                    text = "${product.priceCurrent / 100} ${NumberFormat.getCurrencyInstance().currency!!.symbol}",
-                                    style = MaterialTheme.typography.titleSmall
+                                    text = "${product.priceOld / 100} ${NumberFormat.getCurrencyInstance().currency!!.symbol}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textDecoration = TextDecoration.LineThrough
                                 )
-                                if (product.priceOld != null) {
-                                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
-                                    Text(
-                                        text = "${product.priceOld / 100} ${NumberFormat.getCurrencyInstance().currency!!.symbol}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        textDecoration = TextDecoration.LineThrough
-                                    )
-                                }
                             }
                         }
-                    } else {
-                        Counter(
-                            counter = productCount,
-                            onAddClick = increaseCounter,
-                            onRemoveClick = decreaseCounter,
-                            modifier = Modifier
-                                .padding(
-                                    start = dimensionResource(id = R.dimen.padding_medium),
-                                    bottom = dimensionResource(id = R.dimen.padding_medium),
-                                    end = dimensionResource(id = R.dimen.padding_medium)
-                                )
-                                .fillMaxWidth()
-                        )
                     }
+                } else {
+                    Counter(
+                        counter = productCount,
+                        onAddClick = increaseCounter,
+                        onRemoveClick = decreaseCounter,
+                        modifier = Modifier
+                            .padding(
+                                start = dimensionResource(id = R.dimen.padding_medium),
+                                bottom = dimensionResource(id = R.dimen.padding_medium),
+                                end = dimensionResource(id = R.dimen.padding_medium)
+                            )
+                            .fillMaxWidth()
+                    )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun ProductTags(product: Product, listOfTags: List<ProductTag>, modifier: Modifier = Modifier) {
-    Row {
-        for (tagId in product.tagIds) {
-            Image(
-                painter = painterResource(
-                    id = when (tagId) {
-                        2 -> R.drawable.tag_without_meat
-                        4 -> R.drawable.tag_spicy
-                        else -> R.drawable.tag_discount
-                    }
-                ),
-                contentDescription = listOfTags.find { it.id == tagId }!!.name,
-                modifier = modifier
-                    .size(24.dp)
-                    .padding(
-                        start = dimensionResource(id = R.dimen.padding_small),
-                        top = dimensionResource(id = R.dimen.padding_small)
-                    )
-            )
         }
     }
 }
@@ -328,11 +327,13 @@ fun SuccessCatalogScreenPreview() {
         SuccessCatalogScreen(
             currentCategory = fakeCategory,
             categoriesOfProduct = listOf(fakeCategory, fakeCategory, fakeCategory),
-            changeCategory = { },
+            changeCategory = {},
             productsList = listOf(fakeProduct, fakeProduct, fakeProduct, fakeProduct),
             cart = mutableMapOf(fakeProduct to 1),
             increaseCounter = {},
             decreaseCounter = {},
+            goToCartScreen = {},
+            onCardClick = {},
             listOfTags = listOf(fakeTag)
         )
     }
@@ -347,7 +348,8 @@ fun GridProductCardPreview() {
             productCount = 0,
             listOfTags = listOf(ProductTag(2, "Вегетарианское блюдо")),
             increaseCounter = {},
-            decreaseCounter = {}
+            decreaseCounter = {},
+            onCardClick = {}
         )
     }
 }
@@ -357,5 +359,18 @@ fun GridProductCardPreview() {
 fun CatalogScreenTopAppBarPreview() {
     FoodiesTheme {
         CatalogScreenTopAppBar(onFilterClick = {}, onSearchClick = {})
+    }
+}
+
+@Preview
+@Composable
+fun CatalogScreenBottomAppBarPreview() {
+    FoodiesTheme {
+        FoodiesAppBotAppBar(
+            onButtonClick = {},
+            cart = mapOf(fakeProduct to 1),
+            currentDestination = CatalogScreenDestination,
+            currentProduct = fakeProduct
+        )
     }
 }

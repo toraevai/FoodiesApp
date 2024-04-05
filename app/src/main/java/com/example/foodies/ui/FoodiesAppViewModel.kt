@@ -1,4 +1,4 @@
-package com.example.foodies.ui.catalogScreen
+package com.example.foodies.ui
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -17,7 +17,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class CatalogScreenViewModel @Inject constructor(private val foodiesRepository: FoodiesRepository) :
+class FoodiesAppViewModel @Inject constructor(private val foodiesRepository: FoodiesRepository) :
     ViewModel() {
 
     var catalogScreenUiState: CatalogScreenUiState by mutableStateOf(CatalogScreenUiState.Loading)

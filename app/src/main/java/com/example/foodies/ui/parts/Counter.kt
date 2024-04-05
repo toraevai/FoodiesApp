@@ -1,7 +1,9 @@
 package com.example.foodies.ui.parts
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -42,7 +44,7 @@ fun Counter(
             onButtonClick = onRemoveClick,
             icon = painterResource(id = R.drawable.baseline_remove_24),
             iconDescription = "Remove one",
-            backgroundColor = MaterialTheme.colorScheme.primary
+            backgroundColor = MaterialTheme.colorScheme.primary,
         )
         Text(
             text = "$counter",
@@ -54,7 +56,7 @@ fun Counter(
             onButtonClick = onAddClick,
             icon = painterResource(id = R.drawable.baseline_add_24),
             iconDescription = "Add one",
-            backgroundColor = MaterialTheme.colorScheme.primary
+            backgroundColor = MaterialTheme.colorScheme.primary,
         )
     }
 }
@@ -67,15 +69,15 @@ fun ButtonForCounter(
     backgroundColor: Color,
     modifier: Modifier = Modifier
 ) {
-    IconButton(
+    Button(
         onClick = onButtonClick,
-        modifier = modifier
-            .size(40.dp)
-            .clip(MaterialTheme.shapes.medium),
-        colors = IconButtonDefaults.iconButtonColors(
+        shape = MaterialTheme.shapes.medium,
+        colors = ButtonDefaults.buttonColors(
             containerColor = if (backgroundColor == MaterialTheme.colorScheme.primary) MaterialTheme.colorScheme.onPrimary
             else MaterialTheme.colorScheme.primary
-        )
+        ),
+        contentPadding = PaddingValues(all = 0.dp),
+        modifier = modifier.size(40.dp)
     ) {
         Icon(
             painter = icon,
